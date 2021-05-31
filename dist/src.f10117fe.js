@@ -129,7 +129,9 @@ var User =
 /** @class */
 function () {
   function User(data) {
-    this.data = data;
+    this.data = data; // this annotation is used when we are not sure of what keys are included in the events object
+
+    this.events = {};
   }
 
   User.prototype.get = function (propName) {
@@ -139,6 +141,24 @@ function () {
   User.prototype.set = function (update) {
     // need to assign update object to the data object
     Object.assign(this.data, update);
+  };
+
+  User.prototype.on = function (eventName, callback) {
+    // because fist time, we would get undefined, so for fallback we cause use ||
+    var handlers = this.events[eventName] || [];
+    handlers.push(callback);
+    this.events[eventName] = handlers;
+  };
+
+  User.prototype.trigger = function (eventName) {
+    var handlers = this.events[eventName] || []; // if (!handlers || handlers.length === 0) {
+    //   return;
+    // }
+    // calling all the functions for a specific eventname
+
+    handlers.forEach(function (callback) {
+      callback();
+    });
   };
 
   return User;
@@ -158,10 +178,14 @@ var user = new User_1.User({
   name: "Himanshu",
   age: 25
 });
-user.set({
-  name: "Simran"
+console.log(user);
+user.on("change", function () {
+  console.log("Change #1");
 });
-console.log(user.get("name"));
+user.on("change", function () {
+  console.log("Change #2");
+});
+user.trigger("change");
 },{"./models/User":"src/models/User.ts"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -190,7 +214,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63911" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54521" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -9,7 +9,7 @@ type Callback = () => void;
 
 export class User {
   // this annotation is used when we are not sure of what keys are included in the events object
-  events: { [key: string]: Callback[] };
+  events: { [key: string]: Callback[] } = {};
 
   constructor(private data: UserProps) {}
 
@@ -27,5 +27,16 @@ export class User {
     const handlers = this.events[eventName] || [];
     handlers.push(callback);
     this.events[eventName] = handlers;
+  }
+
+  trigger(eventName: string): void {
+    const handlers = this.events[eventName] || [];
+    // if (!handlers || handlers.length === 0) {
+    //   return;
+    // }
+    // calling all the functions for a specific eventname
+    handlers.forEach((callback) => {
+      callback();
+    });
   }
 }
