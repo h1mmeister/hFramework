@@ -5,9 +5,12 @@ interface UserProps {
 }
 
 // type alias for callback function
-type Callback = () => {};
+type Callback = () => void;
 
 export class User {
+  // this annotation is used when we are not sure of what keys are included in the events object
+  events: { [key: string]: Callback[] };
+
   constructor(private data: UserProps) {}
 
   get(propName: string): string | number {
@@ -19,5 +22,10 @@ export class User {
     Object.assign(this.data, update);
   }
 
-  on(eventName: string, callback: Callback) {}
+  on(eventName: string, callback: Callback): void {
+    // because fist time, we would get undefined, so for fallback we cause use ||
+    const handlers = this.events[eventName] || [];
+    handlers.push(callback);
+    this.events[eventName] = handlers;
+  }
 }
