@@ -4,6 +4,9 @@ interface UserProps {
   age?: number;
 }
 
+// type alias for callback function
+type Callback = () => {};
+
 export class User {
   constructor(private data: UserProps) {}
 
@@ -15,4 +18,6 @@ export class User {
     // need to assign update object to the data object
     Object.assign(this.data, update);
   }
+
+  on(eventName: string, callback: Callback) {}
 }
