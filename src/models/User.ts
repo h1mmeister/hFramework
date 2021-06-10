@@ -42,12 +42,23 @@ export class User {
       callback();
     });
   }
-
+  // this will fetch the user from the json-server
   fetch(): void {
     axios
       .get(`http://localhost:3000/users/${this.get("id")}`)
       .then((response: AxiosResponse) => {
         this.set(response.data);
       });
+  }
+
+  // this will save the user depending whether we pushing a brand new user or the modifying the existing user
+  save(): void {
+    const id = this.get("id");
+
+    if (id) {
+      axios.put(`http://localhost:3000/users/${id}`, this.data);
+    } else {
+      axios.post("http://localhost:3000/users", this.data);
+    }
   }
 }

@@ -1917,8 +1917,8 @@ module.exports.default = axios;
 
 },{"./utils":"node_modules/axios/lib/utils.js","./helpers/bind":"node_modules/axios/lib/helpers/bind.js","./core/Axios":"node_modules/axios/lib/core/Axios.js","./core/mergeConfig":"node_modules/axios/lib/core/mergeConfig.js","./defaults":"node_modules/axios/lib/defaults.js","./cancel/Cancel":"node_modules/axios/lib/cancel/Cancel.js","./cancel/CancelToken":"node_modules/axios/lib/cancel/CancelToken.js","./cancel/isCancel":"node_modules/axios/lib/cancel/isCancel.js","./helpers/spread":"node_modules/axios/lib/helpers/spread.js","./helpers/isAxiosError":"node_modules/axios/lib/helpers/isAxiosError.js"}],"node_modules/axios/index.js":[function(require,module,exports) {
 module.exports = require('./lib/axios');
-},{"./lib/axios":"node_modules/axios/lib/axios.js"}],"src/index.ts":[function(require,module,exports) {
-"use strict"; // import { User } from "./models/User";
+},{"./lib/axios":"node_modules/axios/lib/axios.js"}],"src/models/User.ts":[function(require,module,exports) {
+"use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
   return mod && mod.__esModule ? mod : {
@@ -1928,23 +1928,86 @@ var __importDefault = this && this.__importDefault || function (mod) {
 
 Object.defineProperty(exports, "__esModule", {
   value: true
-}); // const user = new User({ name: "Himanshu", age: 25 });
-// console.log(user);
-// user.on("change", () => {
-//   console.log("Change #1");
-// });
-// user.on("change", () => {
-//   console.log("Change #2");
-// });
-// user.trigger("change");
+});
+exports.User = void 0;
 
 var axios_1 = __importDefault(require("axios"));
 
-axios_1.default.post("http://localhost:3000/users", {
+var User =
+/** @class */
+function () {
+  function User(data) {
+    this.data = data; // this annotation is used when we are not sure of what keys are included in the events object
+
+    this.events = {};
+  }
+
+  User.prototype.get = function (propName) {
+    return this.data[propName];
+  };
+
+  User.prototype.set = function (update) {
+    // need to assign update object to the data object
+    Object.assign(this.data, update);
+  };
+
+  User.prototype.on = function (eventName, callback) {
+    // because fist time, we would get undefined, so for fallback we cause use ||
+    var handlers = this.events[eventName] || [];
+    handlers.push(callback);
+    this.events[eventName] = handlers;
+  };
+
+  User.prototype.trigger = function (eventName) {
+    var handlers = this.events[eventName] || []; // if (!handlers || handlers.length === 0) {
+    //   return;
+    // }
+    // calling all the functions for a specific eventname
+
+    handlers.forEach(function (callback) {
+      callback();
+    });
+  }; // this will fetch the user from the json-server
+
+
+  User.prototype.fetch = function () {
+    var _this = this;
+
+    axios_1.default.get("http://localhost:3000/users/" + this.get("id")).then(function (response) {
+      _this.set(response.data);
+    });
+  }; // this will save the user depending whether we pushing a brand new user or the modifying the existing user
+
+
+  User.prototype.save = function () {
+    var id = this.get("id");
+
+    if (id) {
+      axios_1.default.put("http://localhost:3000/users/" + id, this.data);
+    } else {
+      axios_1.default.post("http://localhost:3000/users", this.data);
+    }
+  };
+
+  return User;
+}();
+
+exports.User = User;
+},{"axios":"node_modules/axios/index.js"}],"src/index.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var User_1 = require("./models/User");
+
+var user = new User_1.User({
   name: "Himanshu",
   age: 25
 });
-},{"axios":"node_modules/axios/index.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+user.save();
+},{"./models/User":"src/models/User.ts"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
